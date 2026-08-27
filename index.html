@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Rewards</title>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f5f7;
+      color: #222;
+      padding-bottom: 80px;
+    }
+
+    .header {
+      background: #1689e5;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      border-radius: 0 0 25px 25px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      opacity: 0.9;
+    }
+
+    .balance-card {
+      background: white;
+      margin: -25px 18px 20px;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .balance {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 8px 0;
+      color: #1689e5;
+    }
+
+    .section {
+      margin: 20px 18px;
+    }
+
+    .section h2 {
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+
+    .game-card,
+    .task,
+    .leader {
+      background: white;
+      padding: 16px;
+      border-radius: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+    }
+
+    .game-button {
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      border: none;
+      background: #1689e5;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      display: block;
+      margin: 20px auto;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(22,137,229,0.3);
+    }
+
+    .game-button:active {
+      transform: scale(0.95);
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      background: #1689e5;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .task-info {
+      flex: 1;
+    }
+
+    .task-info strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .task-info small {
+      color: #777;
+    }
+
+    .leader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 5px;
+      box-shadow: 0 -3px 15px rgba(0,0,0,0.08);
+    }
+
+    .bottom-nav button {
+      background: transparent;
+      color: #555;
+      font-size: 13px;
+      padding: 5px;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>🎮 Game Rewards</h1>
+    <p>Play games and collect points</p>
+  </div>
+
+  <div class="balance-card">
+    <p>Your Points</p>
+    <div class="balance" id="balance">0</div>
+    <p>⭐ Points</p>
+  </div>
+
+  <div class="section">
+
+    <h2>🎮 Tap Game</h2>
+
+    <div class="game-card">
+      <p style="text-align:center;">
+        Tap the button and earn points!
+      </p>
+
+      <button class="game-button" onclick="tapGame()">
+        TAP
+      </button>
+
+      <div class="message" id="gameMessage"></div>
+    </div>
+
+  </div>
+
+  <div class="section">
+
+    <h2>🎁 Daily Reward</h2>
+
+    <div class="game-card">
+      <p>Claim your daily bonus.</p>
+      <br>
+      <button onclick="dailyReward()">Claim +100 ⭐</button>
+      <div class="message" id="rewardMessage"></div>
+    </div>
+
+  </div>
+
+  <div class="section">
+
+    <h2>📋 Tasks</h2>
+
+    <div class="task">
+      <div class="task-info">
+        <strong>📢 Join our Telegram channel</strong>
+        <small>Reward: +500 points</small>
+      </div>
+
+      <button onclick="completeTask('telegram')">
+        Complete
+      </button>
+    </div>
+
+    <div class="task">
+      <div class="task-info">
+        <strong>🎮 Play the tap game</strong>
+        <small>Reward: +100 points</small>
+      </div>
+
+      <button onclick="completeTask('game')">
+        Complete
+      </button>
+    </div>
+
+  </div>
+
+  <div class="section">
+
+    <h2>🏆 Leaderboard</h2>
+
+    <div class="leader">
+      <span>🥇 Player 1</span>
+      <strong>12,500 ⭐</strong>
+    </div>
+
+    <div class="leader">
+      <span>🥈 Player 2</span>
+      <strong>9,800 ⭐</strong>
+    </div>
+
+    <div class="leader">
+      <span>🥉 Player 3</span>
+      <strong>7,250 ⭐</strong>
+    </div>
+
+    <div class="leader">
+      <span>👤 You</span>
+      <strong id="leaderPoints">0 ⭐</strong>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <button onclick="scrollToTop()">🏠 Home</button>
+    <button onclick="scrollToGame()">🎮 Games</button>
+    <button onclick="scrollToTasks()">📋 Tasks</button>
+    <button onclick="showProfile()">👤 Profile</button>
+  </div>
+
+  <script>
+
+    // Telegram Mini App
+    const tg = window.Telegram.WebApp;
+
+    tg.ready();
+    tg.expand();
+
+    // Load saved points
+    let points = Number(localStorage.getItem("points")) || 0;
+
+    function updatePoints() {
+      document.getElementById("balance").textContent = points;
+      document.getElementById("leaderPoints").textContent =
+        points + " ⭐";
+
+      localStorage.setItem("points", points);
+    }
+
+    // Tap game
+    function tapGame() {
+      points += 1;
+      updatePoints();
+
+      document.getElementById("gameMessage").textContent =
+        "+1 point! 🎉";
+    }
+
+    // Daily reward
+    function dailyReward() {
+
+      const today = new Date().toDateString();
+      const lastReward = localStorage.getItem("lastReward");
+
+      if (lastReward === today) {
+        document.getElementById("rewardMessage").textContent =
+          "You already claimed today's reward.";
+        return;
+      }
+
+      points += 100;
+
+      localStorage.setItem("lastReward", today);
+
+      updatePoints();
+
+      document.getElementById("rewardMessage").textContent =
+        "+100 points added! 🎁";
+    }
+
+    // Tasks
+    function completeTask(task) {
+
+      const completed = localStorage.getItem(
+        "task_" + task
+      );
+
+      if (completed === "true") {
+        alert("You already completed this task.");
+        return;
+      }
+
+      if (task === "telegram") {
+        points += 500;
+      }
+
+      if (task === "game") {
+        points += 100;
+      }
+
+      localStorage.setItem(
+        "task_" + task,
+        "true"
+      );
+
+      updatePoints();
+
+      alert("Task completed! 🎉");
+    }
+
+    // Navigation
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function scrollToGame() {
+      window.scrollTo({
+        top: 300,
+        behavior: "smooth"
+      });
+    }
+
+    function scrollToTasks() {
+      window.scrollTo({
+        top: 700,
+        behavior: "smooth"
+      });
+    }
+
+    // Profile
+    function showProfile() {
+
+      const user = tg.initDataUnsafe.user;
+
+      if (user) {
+
+        const name =
+          user.first_name || "Telegram User";
+
+        alert(
+          "👤 Profile\n\n" +
+          "Name: " + name + "\n" +
+          "Points: " + points
+        );
+
+      } else {
+
+        alert(
+          "👤 Profile\n\n" +
+          "Points: " + points
+        );
+
+      }
+    }
+
+    updatePoints();
+
+  </script>
+
+</body>
+  </html>
